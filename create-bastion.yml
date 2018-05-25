@@ -26,6 +26,15 @@
       add_host: hostname={{ item.public_ip }} groupname=new_instances
       loop: "{{ gce.instance_data }}"
 
+    - gcdns_record:
+        record: "{{ instance_names }}.{{ dns_zone }}"
+        zone: "{{ dns_zone }}"
+        type: A
+        value: "{{ item.public_ip }}"
+        overwrite: true 
+        ttl: 5
+      loop: "{{ gce.instance_data }}"
+
 - name: Manage new instances
   hosts: new_instances
   connection: ssh
@@ -80,9 +89,4 @@
     - name: Install Apache Libcloud
       command: pip install apache-libcloud
       register: apache-libcloud
-    - gcdns_record:
-        record: "{{ instance_names }}.{{ dns_zone }}" 
-        zone: "{{ dns_zone }}"
-        type: A
-        value: "{{ ansible_eth0.ipv4.address }}"
 
