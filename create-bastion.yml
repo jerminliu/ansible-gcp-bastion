@@ -50,6 +50,10 @@
         - ansible
         - mlocate
         - python27-python-pip
+        - git
+        - python-libcloud 
+        - qemu-img
+        - wget
       tags:
         - packages
       ignore_errors: yes

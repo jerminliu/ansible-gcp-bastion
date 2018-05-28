@@ -1,0 +1,13 @@
+---
+- name: SOE Install
+  hosts: OSEv3 
+  become: true 
+  tasks:
+  - name: Install base packages
+    yum: name={{ item }} state=installed
+    with_items:
+      - subscription-manager
+      - wget
+    tags:
+      - packages
+    ignore_errors: yes

@@ -1,0 +1,53 @@
+---
+ansible_user: awx
+ansible_connection: ssh
+ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q awx@bastion.gcpocp.com"'
+
+ansible_become: true
+hosting_infrastructure: gcp
+dns_domain: gcpocp.com
+env_id: env1
+
+docker_storage_block_device: "/dev/vdb"
+
+cloud_infrastructure:
+   region: australia-southeast1
+   image_name: rhel7
+   masters:
+     count: 1
+     flavor: n1-standard-8
+     zones:
+     - australia-southeast1-a
+     name_prefix: master
+     preemptible: false
+     docker_volume_size: 12
+   appnodes:
+     count: 1
+     flavor: n1-standard-4
+     zones:
+     - australia-southeast1-a
+     name_prefix: node
+     preemptible: false
+     docker_volume_size: 50
+   infranodes:
+     count: 1
+     flavor: n1-standard-4
+     zones:
+     - australia-southeast1-a
+     name_prefix: infranode
+     preemptible: false
+     docker_volume_size: 20
+
+service_account_email: ansibletower@mgl-poc-bfsdigital-openshift.iam.gserviceaccount.com
+credentials_file: /var/lib/awx/projects/casl-ansible/inventory/gcpocp.com.d/inventory/mgl-poc-bfsdigital-openshift-fa830930a6bb.json
+project_id: mgl-poc-bfsdigital-openshift
+
+google_registry_bucket_name: openshift-registry-{{ env_id }}-{{ project_id }}
+
+openshift_master_cluster_public_hostname: master-0.{{ env_id }}.{{ dns_domain }}
+openshift_master_cluster_hostname: master-internal.{{ env_id }}.{{ dns_domain }}
+openshift_master_default_subdomain: apps.{{ env_id }}.{{ dns_domain }}
+
+openshift_gcp_prefix: "{{ env_id }}"
+openshift_gcp_project: "{{ project_id }}"
+openshift_gcp_multizone: true
