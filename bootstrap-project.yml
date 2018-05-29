@@ -10,16 +10,18 @@
     command: 'tower-manage inventory_import --source={{ inventory_source }} --inventory-name="{{ inventory_name }}" --overwrite --overwrite-vars'
     ignore_errors: yes
 
-  - name: GCP Provision Nodes test
-    become: true
-    tower_job_template:
-      name: GCP Provision Nodes test
-      job_type: run
-      inventory: "{{ inventory_name }}"
-      project: "{{ project_name }} " 
-      playbook: "playbooks/openshift/gcp/provision.yml"
-      machine_credential: gcp-privkey
-      cloud_credential: "{{ inventory_name }}"
-      state: present
-      extra_vars_path: "gcp.provision.yml" 
-      tower_config_file: "~/.tower_cli.cfg"
+#  - name: GCP Provision Nodes test
+#    become: true
+#    tower_job_template:
+#      name: GCP Provision Nodes test
+#      job_type: run
+#      inventory: "{{ inventory_name }}"
+#      project: "{{ project_name }} " 
+#      playbook: "playbooks/openshift/gcp/provision.yml"
+#      machine_credential: gcp-privkey
+#      cloud_credential: "{{ inventory_name }}"
+#      state: present
+#      #extra_vars_path: "gcp.provision.yml" 
+#      tower_host: https://towerserver.gcpocp.com
+#      tower_username: admin
+#      tower_password: mtmm0r53
