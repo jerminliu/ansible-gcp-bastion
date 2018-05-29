@@ -7,7 +7,7 @@
     - name: Launch instances
       ec2:
          key_name: "{{ keypair }}"
-         group: "{{ security_group }}"
+         group_id: "{{ security_group_id }}"
          instance_type: "{{ instance_type }}"
          image: "{{ image }}"
          wait: true
