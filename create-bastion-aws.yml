@@ -7,6 +7,7 @@
     - name: Launch instances
       ec2:
          key_name: "{{ keypair }}"
+         state: present
          group_id: "{{ security_group_id }}"
          instance_type: "{{ instance_type }}"
          image: "{{ image }}"
@@ -15,8 +16,7 @@
          vpc_subnet_id: "{{ vpc_subnet_id}}"
          assign_public_ip: yes
          instance_tags:
-             Name: env_id
-             Value: "{{ env_id }}"
+             env_id: "{{ env_id }}"
       register: ec2
 
     - name: Add new instance to host group
