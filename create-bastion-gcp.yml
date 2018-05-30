@@ -55,6 +55,7 @@
         - python-libcloud 
         - qemu-img
         - wget
+        - bind-utils
       tags:
         - packages
       ignore_errors: yes
