@@ -1,0 +1,126 @@
+---
+#ansible_user: awx
+#ansible_connection: ssh
+#ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q awx@bastion.gcpocp.com"'
+
+openshift_enable_service_catalog: false
+openshift_hosted_prometheus_deploy: false
+openshift_cfme_install_app: false
+openshift_install_examples: false
+
+openshift_disable_check: docker_image_availability,docker_storage,memory_availability,package_version,disk_availability
+ansible_user: openshift
+ansible_become: true
+hosting_infrastructure: gcp
+dns_domain: gcpocp.com
+env_id: env1
+
+docker_storage_block_device: "/dev/vdb"
+
+cloud_infrastructure:
+   region: australia-southeast1
+   image_name: rhel-7-atomic-host
+#  image_name: rhel-7-5-host
+   masters:
+     count: 1
+     flavor: n1-standard-8
+     zones:
+     - australia-southeast1-a
+     name_prefix: master
+     preemptible: false
+     docker_volume_size: 12
+   appnodes:
+     count: 1
+     flavor: n1-standard-4
+     zones:
+     - australia-southeast1-a
+     name_prefix: node
+     preemptible: false
+     docker_volume_size: 50
+   infranodes:
+     count: 1
+     flavor: n1-standard-4
+     zones:
+     - australia-southeast1-a
+     name_prefix: infranode
+     preemptible: false
+     docker_volume_size: 20
+
+service_account_email: ansibletower@mgl-poc-bfsdigital-openshift.iam.gserviceaccount.com
+credentials_file: /var/lib/awx/projects/casl-ansible/inventory/gcpocp.com.d/inventory/mgl-poc-bfsdigital-openshift-fa830930a6bb.json
+project_id: mgl-poc-bfsdigital-openshift
+
+google_registry_bucket_name: "{{ project_id }}-{{ project_id }}"
+openshift_gcp_prefix: "{{ project_id }}"
+openshift_gcp_project: "{{ project_id }}"
+openshift_gcp_multizone: false
+ha_mode: false
+rhsm_register: True
+rhsm_repos:
+  - "rhel-7-server-rpms"
+  - "rhel-7-server-ose-3.9-rpms"
+  - "rhel-7-server-extras-rpms"
+  - "rhel-7-fast-datapath-rpms"
+  - "rhel-7-server-ansible-2.4-rpms"
+
+#openshift_cloudprovider_kind: gce
+#openshift_clusterid: "{{ env_id }}"
+
+dynamic_volumes_check: False
+deployment_type: openshift-enterprise
+openshift_deployment_type: openshift-enterprise
+containerized: True
+openshift_use_etcd_system_container: True
+openshift_docker_use_system_container: False
+#openshift_release: 3.9
+
+openshift_router_selector: 'region=primary'
+openshift_registry_selector: 'region=primary'
+
+osm_default_node_selector: 'region=primary'
+osm_use_cockpit: true
+osm_cockpit_plugins:
+- 'cockpit-kubernetes'
+
+# OpenShift FQDNs, DNS, App domain specific configurations
+openshift_master_default_subdomain: "apps.{{ env_id }}.{{ dns_domain }}"
+openshift_master_cluster_hostname: "master-1.{{ env_id }}.{{ dns_domain }}"
+openshift_master_cluster_public_hostname: "console.{{ env_id }}.{{ dns_domain }}"
+
+openshift_master_api_port: 443
+openshift_master_console_port: 443
+openshift_hosted_logging_deploy: false
+
+# HTPASSWD Identity Provider
+# - update to other types of auth providers if necessary (i.e: LDAP, OAuth, ...)
+openshift_master_identity_providers:
+ - 'name': 'htpasswd_auth'
+   'login': 'true'
+   'challenge': 'true'
+   'kind': 'HTPasswdPasswordIdentityProvider'
+   'filename': '/etc/origin/master/htpasswd'
+
+# Uncommented to automatically create a set of test users with the above
+# HTPASSWD Identity Provider
+create_users:
+  num_users: 5
+  prefix: 'admin'
+  passwd_file: '/etc/origin/master/htpasswd'
+  password: 'password'
+
+# OpenShift Node specific parameters
+openshift_node_kubelet_args:
+  minimum-container-ttl-duration:
+  - "10s"
+  maximum-dead-containers-per-container:
+  - "2"
+  maximum-dead-containers:
+  - "50"
+  pods-per-core:
+  - '10'
+  max-pods:
+  - '250'
+  image-gc-high-threshold:
+  - '80'
+  image-gc-low-threshold:
+  - '60'
